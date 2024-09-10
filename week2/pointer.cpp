@@ -1,33 +1,51 @@
 #include<iostream>
+#include<deque>
 using namespace std;
 #include <vector>
+#include <stack>
 
 class studentData {
     public :
         string name ;
         float cgpa;
         char grade;
-
-    // void deleteStudent(string name )
-    // {
-    //     for(int i = 0 ; i < )
-    //     {
-
-    //     }
-
-    // }    
+   
 };
+class Tasks {
+
+    public :
+    int priority ;
+    string tasks ; 
+
+};
+
+void addTaskAtStart(deque<Tasks> deqq)
+{
+    
+}
+void addTaskAtEnd()
+{
+
+}
+void deleteTaskAtStart()
+{
+
+}
+void deleteTaskAtEnd()
+{
+    
+}
 
 struct node 
 {
     int data;
-    struct node *prev;
-    struct node *next;
+    node *prev;
+    node *next;
 
 };
 
 void forwardTraversal(node* head) {
-  
+ 
     node* curr = head;
 
     while (curr != nullptr) {
@@ -66,7 +84,7 @@ node* insertBegin(node* head, int data) {
     return new_node;
 }
 
-node *delHead(node *head) {
+node* delHead(node *head) {
 
     if (head == nullptr)
         return nullptr;
@@ -91,7 +109,40 @@ void printLinkedList(node* head) {
       cout << "\n";
 }
 
+void printDeque(deque<Tasks>& deqq  )
+{
+     for (int i = 0 ; i < deqq.size() ; i++ )
+    {
+        cout <<"Priority : " << deqq[i].priority << " tasks :" << deqq[i].tasks << endl;     
+    }
 
+}
+
+bool checkStringExpression(const string& s)
+{
+
+    stack<char> stk;
+
+    for (char ch : s) {
+        if (ch == '(' || ch == '{' || ch == '[') {
+            stk.push(ch);
+        }
+        else {
+            if (!stk.empty()) {
+                char top = stk.top();
+                stk.pop();  
+
+                if ((ch == ')' && top != '(') || (ch == '}' && top != '{') || (ch == ']' && top != '[')) {
+                    return false;  
+                }
+            } else {
+                return false; 
+            }
+        }
+
+}
+return stk.empty();
+};
 
 
 
@@ -112,86 +163,124 @@ void printLinkedList(node* head) {
 
 int main()
 {
-    studentData s1;
-    s1.name = "Burhan";
-    s1.cgpa = 3.12;
-    s1.grade = 'B';
+//     studentData s1;
+//     s1.name = "Burhan";
+//     s1.cgpa = 3.12;
+//     s1.grade = 'B';
 
-    studentData s2;
-    s2.name = "Naseeb";
-    s2.cgpa = 4.12;
-    s2.grade = 'A';
-    vector<studentData> myVector;
+//     studentData s2;
+//     s2.name = "Naseeb";
+//     s2.cgpa = 4.12;
+//     s2.grade = 'A';
+//     vector<studentData> myVector;
 
-    myVector.push_back(s1); // push 
-    myVector.push_back(s2);
-
-
- /// retrieve 
-    for (int i = 0 ; i < myVector.size() ; i++ )
-    {
-        cout <<"StudentName : " << myVector[i].name << " CGPA :" << myVector[i].cgpa << " Grades :" << myVector[i].grade << endl;     
-    }
-
- // delete 
-    deleteStudent(myVector ,"Burhan");
+//     myVector.push_back(s1); // push 
+//     myVector.push_back(s2);
 
 
-    // to check student del or not 
+//  /// retrieve 
+//     for (int i = 0 ; i < myVector.size() ; i++ )
+//     {
+//         cout <<"StudentName : " << myVector[i].name << " CGPA :" << myVector[i].cgpa << " Grades :" << myVector[i].grade << endl;     
+//     }
 
-// check 
-      for (int i = 0 ; i < myVector.size() ; i++ )
-    {
-        cout <<"StudentName : " << myVector[i].name << " CGPA :" << myVector[i].cgpa << " Grades :" << myVector[i].grade << endl;     
-    }
+//  // delete 
+//     deleteStudent(myVector ,"Burhan");
 
-    // double linked list
+
+//     // to check student del or not 
+
+// // check 
+//       for (int i = 0 ; i < myVector.size() ; i++ )
+//     {
+//         cout <<"StudentName : " << myVector[i].name << " CGPA :" << myVector[i].cgpa << " Grades :" << myVector[i].grade << endl;     
+//     }
+
+//     // double linked list
 
  
-    node* head_node = new node();
-    node* firstNode = new node();
-    node* secondNode = new node();
-    node* thirdNode = new node();
+//     node* head_node = new node();
+//     node* firstNode = new node();
+//     node* secondNode = new node();
+//     node* thirdNode = new node();
 
 
-    head_node->data = 1 ; 
-    head_node->prev = NULL;
-    head_node->next = firstNode;
+//     head_node->data = 1 ; 
+//     head_node->prev = NULL;
+//     head_node->next = firstNode;
 
-    firstNode->data = 2;
-    firstNode->prev = head_node;
-    firstNode->next = secondNode;
-
-
-    secondNode->data = 3;
-    secondNode->prev = firstNode;
-    secondNode->next = thirdNode;
-
-    thirdNode->data = 4;
-    thirdNode->prev = secondNode;
+//     firstNode->data = 2;
+//     firstNode->prev = head_node;
+//     firstNode->next = secondNode;
 
 
-    cout << "Forward Traversal:" << endl;
-    forwardTraversal(head_node);
+//     secondNode->data = 3;
+//     secondNode->prev = firstNode;
+//     secondNode->next = thirdNode;
 
-    cout << "Backward Traversal:" << endl;
-    backwardTraversal(thirdNode);
+//     thirdNode->data = 4;
+//     thirdNode->prev = secondNode;
+
+
+//     cout << "Forward Traversal:" << endl;
+//     forwardTraversal(head_node);
+
+//     cout << "Backward Traversal:" << endl;
+//     backwardTraversal(thirdNode);
 
    
-    cout << "Add  a node at the start  " << endl;
-    node* head = new node();
-    head = insertBegin(head_node , 7 );
-    printLinkedList(head);
+//     cout << "Add  a node at the start  " << endl;
+//     node* head = new node();
+//     head = insertBegin(head_node , 7 );
+//     printLinkedList(head);
 
 
-    cout << "Delete a node at the start " << endl;
-    node* headNew = new node();
-    headNew = delHead(head);
-    printLinkedList(headNew);
+//     cout << "Delete a node at the start " << endl;
+//     node* headNew = new node();
+//     headNew = delHead(head);
+//     printLinkedList(headNew);
 
     
 
+// task 3 
+
+    Tasks t1;
+    deque<Tasks> deqq ;
+
+    t1.tasks = "hello ";
+    t1.priority = 1;
+
+    Tasks t2;
+    t2.tasks = "hello ";
+    t2.priority = 2;
+
+    Tasks t3;
+    t3.tasks = "hello ";
+    t3.priority = 3;
+
+    Tasks t4;
+    t4.tasks = "hello ";
+    t4.priority = 4;
 
 
+    deqq.push_front(t1);
+    deqq.push_front(t4);
+    deqq.push_back(t3);
+    deqq.push_back(t2);
+
+
+
+    printDeque(deqq);
+
+    // for (int i = 0 ; i < deqq.size() ; i++ )
+    // {
+    //     cout <<"StudentName : " << deqq[i].priority << " CGPA :" << deqq[i].tasks << endl;     
+    // }
+
+
+    cout<<"the expression balancing "<<endl;
+    string exp = "{({})}";
+    bool res = checkStringExpression(exp);
+    cout<<" The expression is valid : " << res <<endl;
 
 }
