@@ -163,82 +163,82 @@ return stk.empty();
 
 int main()
 {
-//     studentData s1;
-//     s1.name = "Burhan";
-//     s1.cgpa = 3.12;
-//     s1.grade = 'B';
+    studentData s1;
+    s1.name = "Burhan";
+    s1.cgpa = 3.12;
+    s1.grade = 'B';
 
-//     studentData s2;
-//     s2.name = "Naseeb";
-//     s2.cgpa = 4.12;
-//     s2.grade = 'A';
-//     vector<studentData> myVector;
+    studentData s2;
+    s2.name = "Naseeb";
+    s2.cgpa = 4.12;
+    s2.grade = 'A';
+    vector<studentData> myVector;
 
-//     myVector.push_back(s1); // push 
-//     myVector.push_back(s2);
-
-
-//  /// retrieve 
-//     for (int i = 0 ; i < myVector.size() ; i++ )
-//     {
-//         cout <<"StudentName : " << myVector[i].name << " CGPA :" << myVector[i].cgpa << " Grades :" << myVector[i].grade << endl;     
-//     }
-
-//  // delete 
-//     deleteStudent(myVector ,"Burhan");
+    myVector.push_back(s1); // push 
+    myVector.push_back(s2);
 
 
-//     // to check student del or not 
+ /// retrieve 
+    for (int i = 0 ; i < myVector.size() ; i++ )
+    {
+        cout <<"StudentName : " << myVector[i].name << " CGPA :" << myVector[i].cgpa << " Grades :" << myVector[i].grade << endl;     
+    }
 
-// // check 
-//       for (int i = 0 ; i < myVector.size() ; i++ )
-//     {
-//         cout <<"StudentName : " << myVector[i].name << " CGPA :" << myVector[i].cgpa << " Grades :" << myVector[i].grade << endl;     
-//     }
+ // delete 
+    deleteStudent(myVector ,"Burhan");
 
-//     // double linked list
+
+    // to check student del or not 
+
+// check 
+      for (int i = 0 ; i < myVector.size() ; i++ )
+    {
+        cout <<"StudentName : " << myVector[i].name << " CGPA :" << myVector[i].cgpa << " Grades :" << myVector[i].grade << endl;     
+    }
+
+    // double linked list
 
  
-//     node* head_node = new node();
-//     node* firstNode = new node();
-//     node* secondNode = new node();
-//     node* thirdNode = new node();
+    node* head_node = new node();
+    node* firstNode = new node();
+    node* secondNode = new node();
+    node* thirdNode = new node();
 
 
-//     head_node->data = 1 ; 
-//     head_node->prev = NULL;
-//     head_node->next = firstNode;
+    head_node->data = 1 ; 
+    head_node->prev = NULL;
+    head_node->next = firstNode;
 
-//     firstNode->data = 2;
-//     firstNode->prev = head_node;
-//     firstNode->next = secondNode;
-
-
-//     secondNode->data = 3;
-//     secondNode->prev = firstNode;
-//     secondNode->next = thirdNode;
-
-//     thirdNode->data = 4;
-//     thirdNode->prev = secondNode;
+    firstNode->data = 2;
+    firstNode->prev = head_node;
+    firstNode->next = secondNode;
 
 
-//     cout << "Forward Traversal:" << endl;
-//     forwardTraversal(head_node);
+    secondNode->data = 3;
+    secondNode->prev = firstNode;
+    secondNode->next = thirdNode;
 
-//     cout << "Backward Traversal:" << endl;
-//     backwardTraversal(thirdNode);
+    thirdNode->data = 4;
+    thirdNode->prev = secondNode;
+
+
+    cout << "Forward Traversal:" << endl;
+    forwardTraversal(head_node);
+
+    cout << "Backward Traversal:" << endl;
+    backwardTraversal(thirdNode);
 
    
-//     cout << "Add  a node at the start  " << endl;
-//     node* head = new node();
-//     head = insertBegin(head_node , 7 );
-//     printLinkedList(head);
+    cout << "Add  a node at the start  " << endl;
+    node* head = new node();
+    head = insertBegin(head_node , 7 );
+    printLinkedList(head);
 
 
-//     cout << "Delete a node at the start " << endl;
-//     node* headNew = new node();
-//     headNew = delHead(head);
-//     printLinkedList(headNew);
+    cout << "Delete a node at the start " << endl;
+    node* headNew = new node();
+    headNew = delHead(head);
+    printLinkedList(headNew);
 
     
 
