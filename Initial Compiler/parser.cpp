@@ -26,12 +26,7 @@ class Lexer {
     private:
         string src;
         size_t pos;
-        /*
-        It hold positive values. 
-        In C++, size_t is an unsigned integer data type used to represent the 
-        size of objects in bytes or indices, especially when working with memory-related 
-        functions, arrays, and containers like vector or string. You can also use the int data type but size_t is recommended one
-        */
+    
 
     public:
         Lexer(const string &src) {
