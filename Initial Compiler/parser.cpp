@@ -6,7 +6,8 @@
 using namespace std;
 
 enum TokenType {
-     T_BOOL, T_INT, T_ID, T_NUM, T_IF, T_ELSE, T_RETURN, 
+    T_STRING, T_FLOAT, T_DOUBLE, T_CHAR, T_VOID, T_BOOL, T_INT,
+    T_ID, T_NUM, T_IF, T_ELSE, T_RETURN, 
     T_ASSIGN, T_PLUS, T_MINUS, T_MUL, T_DIV, 
     T_LPAREN, T_RPAREN, T_LBRACE, T_RBRACE,  
     T_SEMICOLON, T_GT, T_EOF, 
@@ -50,6 +51,12 @@ public:
                 string word = consumeWord();
                 if (word == "int") tokens.push_back(Token{T_INT, word, lineNo, colNo});
                 else if (word == "bool") tokens.push_back(Token{T_BOOL, word, lineNo, colNo});
+                else if (word == "float") tokens.push_back(Token{T_FLOAT, word, lineNo, colNo});
+                else if (word == "double") tokens.push_back(Token{T_DOUBLE, word, lineNo, colNo});
+                else if (word == "char") tokens.push_back(Token{T_CHAR, word, lineNo, colNo});
+                else if (word == "void") tokens.push_back(Token{T_VOID, word, lineNo, colNo});
+                else if (word == "string") tokens.push_back(Token{T_STRING, word, lineNo, colNo});
+
                 else if (word == "if") tokens.push_back(Token{T_IF, word, lineNo, colNo});
                 else if (word == "else") tokens.push_back(Token{T_ELSE, word, lineNo, colNo});
                 else if (word == "return") tokens.push_back(Token{T_RETURN, word, lineNo, colNo});
@@ -130,9 +137,31 @@ private:
     size_t pos;
 
     void parseStatement() {
-        if (tokens[pos].type == T_INT) {
-            parseDeclaration();
-        } else if (tokens[pos].type == T_ID) {
+
+
+        if (tokens[pos].type == T_INT 
+            ) {
+            parseDeclaration( T_INT );
+        }
+        else  if (tokens[pos].type == T_DOUBLE) {
+            parseDeclaration( T_DOUBLE );
+        }
+        else if (tokens[pos].type == T_FLOAT ) {
+            parseDeclaration( T_FLOAT );
+        }
+        else if (tokens[pos].type == T_VOID  ) {
+            parseDeclaration( T_VOID );
+        }
+        else if (tokens[pos].type == T_STRING  ) {
+            parseDeclaration( T_STRING );
+        }
+          else if (tokens[pos].type == T_CHAR  ) {
+            parseDeclaration( T_CHAR );
+        }
+        else if (tokens[pos].type == T_BOOL  ) {
+            parseDeclaration( T_BOOL );
+        }
+        else if (tokens[pos].type == T_ID) {
             parseAssignment();
         } else if (tokens[pos].type == T_IF) {
             parseIfStatement();
@@ -155,8 +184,8 @@ private:
         expect(T_RBRACE);  
     }
 
-    void parseDeclaration() {
-        expect(T_INT);
+    void parseDeclaration(TokenType a) {
+        expect(a);
         expect(T_ID);
         expect(T_SEMICOLON);
     }
@@ -263,6 +292,12 @@ string tokenTypeToString(TokenType type) {
 int main() {
     string input = R"(
         int b ;
+        string naseeb ;
+        float dd;
+        void a ;
+        double ajmal ; 
+        bool hello ; 
+        char ammad  ; 
         a = 5;
         int b;
         b = a + 10;
