@@ -6,7 +6,7 @@
 using namespace std;
 
 enum TokenType {
-    T_STRING, T_FLOAT, T_DOUBLE, T_CHAR, T_VOID, T_BOOL, T_INT,
+    T_STRING_LITERAL,T_STRING, T_FLOAT, T_DOUBLE, T_CHAR, T_VOID, T_BOOL, T_INT,
     T_ID, T_NUM, T_IF, T_ELSE, T_RETURN, 
     T_ASSIGN, T_PLUS, T_MINUS, T_MUL, T_DIV, 
     T_LPAREN, T_RPAREN, T_LBRACE, T_RBRACE,  
@@ -63,6 +63,10 @@ public:
                 else tokens.push_back(Token{T_ID, word, lineNo, colNo});
                 continue;
             }
+             if (current == '"') {
+                tokens.push_back(Token{T_STRING_LITERAL, consumeStringLiteral(), lineNo, colNo});
+                continue;
+            }
 
             switch (current) {
                 case '=': tokens.push_back(Token{T_ASSIGN, "=", lineNo, colNo}); break;
@@ -101,12 +105,24 @@ private:
 
     string consumeNumber() {
         size_t start = pos;
-        while (pos < src.size() && isdigit(src[pos])) {
+        bool dotFlag = false;
+        while (pos < src.size() && (isdigit(src[pos])) || (src[pos] == '.' && !dotFlag)) {
+            if(src[pos] == '.'){
+                dotFlag = true;
+            }
             pos++;
-            colNo++;
         }
-        return src.substr(start, pos - start);
-    }
+        return src.substr(start, pos -start);
+}
+
+    // string consumeNumber() {
+    //     size_t start = pos;
+    //     while (pos < src.size() && (isdigit(src[pos] ) ||   )) {
+    //         pos++;
+    //         colNo++;
+    //     }
+    //     return src.substr(start, pos - start);
+    // }
 
     string consumeWord() {
         size_t start = pos;
@@ -114,6 +130,17 @@ private:
             pos++;
             colNo++;
         }
+        return src.substr(start, pos - start);
+    }
+
+    string consumeStringLiteral() {
+        pos++;  // Skip the opening quote
+        size_t start = pos;
+        while (pos < src.size() && src[pos] != '"') {
+            pos++;
+            colNo++;
+        }
+        pos++;  // Skip the closing quote
         return src.substr(start, pos - start);
     }
 };
@@ -190,7 +217,7 @@ private:
         expect(T_SEMICOLON);
     }
 
-    void parseAssignment() {
+    void parseAssignment( ) {
         expect(T_ID);
         expect(T_ASSIGN);
         parseExpression();
@@ -235,19 +262,33 @@ private:
         }
     }
 
+    // void parseFactor() {
+    //     if (tokens[pos].type == T_NUM || tokens[pos].type == T_ID) {
+    //         pos++;
+    //     } else if (tokens[pos].type == T_LPAREN) {
+    //         expect(T_LPAREN);
+    //         parseExpression();
+    //         expect(T_RPAREN);
+    //     } else {
+    //         cout << "Syntax error: unexpected token '" << tokens[pos].value 
+    //              << "' at line " << tokens[pos].lineNo << ", column " << tokens[pos].colNo << endl;
+    //         exit(1);
+    //     }
+    // }
     void parseFactor() {
-        if (tokens[pos].type == T_NUM || tokens[pos].type == T_ID) {
-            pos++;
-        } else if (tokens[pos].type == T_LPAREN) {
-            expect(T_LPAREN);
-            parseExpression();
-            expect(T_RPAREN);
-        } else {
-            cout << "Syntax error: unexpected token '" << tokens[pos].value 
-                 << "' at line " << tokens[pos].lineNo << ", column " << tokens[pos].colNo << endl;
-            exit(1);
-        }
+    if (tokens[pos].type == T_NUM || tokens[pos].type == T_ID || tokens[pos].type == T_STRING_LITERAL) {
+        pos++;
+    } else if (tokens[pos].type == T_LPAREN) {
+        expect(T_LPAREN);
+        parseExpression();
+        expect(T_RPAREN);
+    } else {
+        cout << "Syntax error: unexpected token '" << tokens[pos].value 
+             << "' at line " << tokens[pos].lineNo 
+             << ", column " << tokens[pos].colNo << endl;
+        exit(1);
     }
+}
 void expect(TokenType type) {
     if (tokens[pos].type == type) {
         pos++;
@@ -293,11 +334,14 @@ int main() {
     string input = R"(
         int b ;
         string naseeb ;
+        char ammad  ; 
         float dd;
+        dd = 2.5 ; 
         void a ;
         double ajmal ; 
         bool hello ; 
         char ammad  ; 
+        naseeb = "burhan";
         a = 5;
         int b;
         b = a + 10;
