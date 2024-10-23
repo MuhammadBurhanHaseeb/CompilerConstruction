@@ -6,7 +6,8 @@
 using namespace std;
 
 enum TokenType {
-    T_STRING_LITERAL,T_STRING, T_FLOAT, T_DOUBLE, T_CHAR, T_VOID, T_BOOL, T_INT,
+    T_CHAR_LITERAL , T_STRING_LITERAL,
+    T_STRING, T_FLOAT, T_DOUBLE, T_CHAR, T_VOID, T_BOOL, T_INT,
     T_ID, T_NUM, T_IF, T_ELSE, T_RETURN, 
     T_ASSIGN, T_PLUS, T_MINUS, T_MUL, T_DIV, 
     T_LPAREN, T_RPAREN, T_LBRACE, T_RBRACE,  
@@ -67,6 +68,10 @@ public:
                 tokens.push_back(Token{T_STRING_LITERAL, consumeStringLiteral(), lineNo, colNo});
                 continue;
             }
+            if (current == '\'') {
+                tokens.push_back(Token{T_CHAR_LITERAL, consumeCharLiteral(), lineNo, colNo});
+                continue;
+            }
 
             switch (current) {
                 case '=': tokens.push_back(Token{T_ASSIGN, "=", lineNo, colNo}); break;
@@ -106,7 +111,7 @@ private:
     string consumeNumber() {
         size_t start = pos;
         bool dotFlag = false;
-        while (pos < src.size() && (isdigit(src[pos])) || (src[pos] == '.' && !dotFlag)) {
+        while (pos < src.size() && isdigit(src[pos]) || (src[pos] == '.' && !dotFlag)) {
             if(src[pos] == '.'){
                 dotFlag = true;
             }
@@ -114,15 +119,6 @@ private:
         }
         return src.substr(start, pos -start);
 }
-
-    // string consumeNumber() {
-    //     size_t start = pos;
-    //     while (pos < src.size() && (isdigit(src[pos] ) ||   )) {
-    //         pos++;
-    //         colNo++;
-    //     }
-    //     return src.substr(start, pos - start);
-    // }
 
     string consumeWord() {
         size_t start = pos;
@@ -142,6 +138,17 @@ private:
         }
         pos++;  // Skip the closing quote
         return src.substr(start, pos - start);
+    }
+     string consumeCharLiteral() {
+        pos++;  // Skip the opening single quote
+        char charValue = src[pos];  // Grab the char (e.g., 'a')
+        pos++;  // Move past the character
+        if (src[pos] != '\'') {  // Ensure closing single quote
+            cout << "Syntax error: unclosed character literal at line " << lineNo << ", column " << colNo << endl;
+            exit(1);
+        }
+        pos++;  // Skip the closing single quote
+        return string(1, charValue);  // Return the char as a string
     }
 };
 
@@ -276,7 +283,8 @@ private:
     //     }
     // }
     void parseFactor() {
-    if (tokens[pos].type == T_NUM || tokens[pos].type == T_ID || tokens[pos].type == T_STRING_LITERAL) {
+    if (tokens[pos].type == T_NUM || tokens[pos].type == T_ID ||
+     tokens[pos].type == T_STRING_LITERAL || tokens[pos].type == T_CHAR_LITERAL ) {
         pos++;
     } else if (tokens[pos].type == T_LPAREN) {
         expect(T_LPAREN);
@@ -341,6 +349,7 @@ int main() {
         double ajmal ; 
         bool hello ; 
         char ammad  ; 
+        ammad = 'b';
         naseeb = "burhan";
         a = 5;
         int b;
