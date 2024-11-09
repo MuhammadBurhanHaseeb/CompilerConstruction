@@ -611,18 +611,67 @@ void parseFactor() {
 
 
 
-
 void expect(TokenType type) {
     if (tokens[pos].type == type) {
-        pos++;
+        pos++;  // Move to the next token if the expected token is found
     } else {
         cout << "Syntax error: expected '" << tokenTypeToString(type) 
              << "' but found '" << tokens[pos].value 
              << "' at line " << tokens[pos].lineNo 
              << ", column " << tokens[pos].colNo << endl;
-        exit(1);
+        
+        // Suggest a possible fix
+        string suggestion = suggestFix(type);
+        if (!suggestion.empty()) {
+            cout << "Suggested fix: " << suggestion << endl;
+        }
+        
+        exit(1);  // Exit after showing the error and suggestion
     }
 }
+
+string suggestFix(TokenType expectedType) {
+    string suggestion = "";
+
+    switch (expectedType) {
+        case T_SEMICOLON:
+            suggestion = "add a semicolon at the end of the statement.";
+            break;
+        case T_LPAREN:
+            suggestion = "add a '(' before the expression.";
+            break;
+        case T_RPAREN:
+            suggestion = "add a ')' after the expression.";
+            break;
+        case T_LBRACE:
+            suggestion = "add a '{' to begin the block.";
+            break;
+        case T_RBRACE:
+            suggestion = "add a '}' to close the block.";
+            break;
+        case T_ID:
+            suggestion = "check if you missed defining the identifier.";
+            break;
+        case T_ASSIGN:
+            suggestion = "add an '=' to assign a value.";
+            break;
+        case T_RETURN:
+            suggestion = "make sure 'return' is followed by an expression (if applicable).";
+            break;
+        case T_IF:
+            suggestion = "ensure that 'if' is followed by a condition and block.";
+            break;
+        case T_ELSE:
+            suggestion = "make sure 'else' is followed by a block.";
+            break;
+        default:
+            suggestion = "check the syntax near this token.";
+            break;
+    }
+
+    return suggestion;
+}
+
 
 
 string tokenTypeToString(TokenType type) {
