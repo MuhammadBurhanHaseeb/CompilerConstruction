@@ -14,7 +14,8 @@ enum TokenType {
     T_LPAREN, T_RPAREN, T_LBRACE, T_RBRACE,  
     T_SEMICOLON, T_GT,T_LT,T_LE,T_GE,T_NEQ,T_EQ ,T_EOF, T_COLON,T_COMMA,
     T_AGR , T_MAGR,
-    T_INCREMENT,T_DECREMENT,   
+    T_INCREMENT,T_DECREMENT,  
+    T_AND , T_OR  
       
 };
 
@@ -116,6 +117,20 @@ public:
                         tokens.push_back(Token{T_LT, "<", lineNo, colNo});
                     }
                     break;
+                case '&':
+                    current = src[pos+1];
+                    if (current == '&') {
+                        tokens.push_back(Token{T_AND, "&&", lineNo, colNo});
+                        pos++; colNo++;
+                    }
+                    break;
+                case '|':
+                    current = src[pos+1];
+                    if (current == '|') {
+                        tokens.push_back(Token{T_OR, "||", lineNo, colNo});
+                        pos++; colNo++;
+                    } 
+                    break;    
                 case '>':
                     current = src[pos+1];
                     if (current == '=') {
@@ -519,7 +534,8 @@ void parseExpression() {
     while (tokens[pos].type == T_PLUS || tokens[pos].type == T_MINUS || 
            tokens[pos].type == T_GT || tokens[pos].type == T_LT ||
            tokens[pos].type == T_GE || tokens[pos].type == T_LE || 
-           tokens[pos].type == T_EQ || tokens[pos].type == T_NEQ) {
+           tokens[pos].type == T_EQ || tokens[pos].type == T_NEQ || 
+           tokens[pos].type == T_AND || tokens[pos].type == T_OR ) {
         
         pos++;  // Advance past the operator
         parseTerm();
@@ -641,7 +657,7 @@ int main() {
             return 0;
         }
 
-        agr (b > 10) {
+        agr (b && 10) {
             return b;
         } magr {
             return 0;
@@ -682,6 +698,14 @@ int main() {
         void printData()
         {
 
+        }
+
+        string  printData( int a  , char b )
+        {
+            if (a < b  )
+            {
+            }
+            return a ;
         }
 
     )";
