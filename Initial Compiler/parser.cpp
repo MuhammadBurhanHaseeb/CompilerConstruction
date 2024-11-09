@@ -26,6 +26,10 @@ struct Token {
     int colNo;
 };
 class Lexer {
+
+    char peek() const {
+    return (pos + 1 < src.size()) ? src[pos + 1] : '\0';
+}
 private:
     string src;
     size_t pos;
@@ -53,6 +57,26 @@ public:
                 tokens.push_back(Token{T_NUM, consumeNumber(), lineNo, colNo});
                 continue;
             }
+
+            // Handle single-line comments starting with "//"
+        if (current == '/' && peek() == '/') {
+            pos += 2;  // Skip the "//"
+            while (pos < src.size() && src[pos] != '\n') {
+                pos++;  // Skip until end of line
+            }
+            continue;  // Ignore the comment and move to the next character
+        }
+
+        // Handle multi-line comments starting with "/*"
+        if (current == '/' && peek() == '*') {
+            pos += 2;  // Skip the "/*"
+            while (pos < src.size() - 1 && !(src[pos] == '*' && peek() == '/')) {
+                pos++;  // Skip until "*/" is found
+            }
+            pos += 2;  // Skip the closing "*/"
+            continue;  // Ignore the comment and move to the next character
+        }
+
             if (isalpha(current)) {
                 string word = consumeWord();
                 if (word == "int") tokens.push_back(Token{T_INT, word, lineNo, colNo});
@@ -707,6 +731,9 @@ int main() {
             }
             return a ;
         }
+
+        // hello burhan butt is here 
+        /* hello burhan butt is here */
 
     )";
 
