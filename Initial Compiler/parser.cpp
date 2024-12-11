@@ -287,12 +287,20 @@ private:
     void parseStatement() {
 
 
-        if (tokens[pos].type == T_INT 
-            ) {
+        if (tokens[pos].type == T_INT  && tokens[pos+2].type == T_ASSIGN) {
+            parseDeclarationAssignment( T_INT );
+        }
+        else if (tokens[pos].type == T_INT) {
             parseDeclaration( T_INT );
+        }
+        else  if (tokens[pos].type == T_DOUBLE && tokens[pos+2].type == T_ASSIGN ) {
+            parseDeclarationAssignment( T_DOUBLE );
         }
         else  if (tokens[pos].type == T_DOUBLE) {
             parseDeclaration( T_DOUBLE );
+        }
+        else if (tokens[pos].type == T_FLOAT  && tokens[pos+2].type == T_ASSIGN ) {
+            parseDeclarationAssignment( T_FLOAT );
         }
         else if (tokens[pos].type == T_FLOAT ) {
             parseDeclaration( T_FLOAT );
@@ -304,11 +312,20 @@ private:
 
                 parseFunctionStatement();
         }
+        else if (tokens[pos].type == T_STRING && tokens[pos+2].type == T_ASSIGN  ) {
+            parseDeclarationAssignment( T_STRING );
+        }
         else if (tokens[pos].type == T_STRING  ) {
             parseDeclaration( T_STRING );
         }
-          else if (tokens[pos].type == T_CHAR  ) {
+          else if (tokens[pos].type == T_CHAR && tokens[pos+2].type == T_ASSIGN ) {
+            parseDeclarationAssignment( T_CHAR );
+        }
+         else if (tokens[pos].type == T_CHAR  ) {
             parseDeclaration( T_CHAR );
+        }
+        else if (tokens[pos].type == T_BOOL  && tokens[pos+2].type == T_ASSIGN) {
+            parseDeclarationAssignment( T_BOOL );
         }
         else if (tokens[pos].type == T_BOOL  ) {
             parseDeclaration( T_BOOL );
@@ -822,6 +839,7 @@ int main() {
             count++;
         }
 
+        int bum = 4  ;
         int num ;
         num = 2;
         switch (num) {
@@ -844,7 +862,6 @@ int main() {
         {
 
         }
-
         string  printData( int a  , char b )
         {
             if (a < b  )
