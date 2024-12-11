@@ -18,7 +18,8 @@ enum TokenType {
     T_INCREMENT,T_DECREMENT,  
     T_AND , T_OR ,
     T_PRIVATE , T_PUBLIC , T_PROTECTED,
-    T_STRUCT , T_CLASS  
+    T_STRUCT , T_CLASS ,
+    T_TRY , T_CATCH, T_ETARGET   
       
 };
 
@@ -109,7 +110,10 @@ public:
                 else if (word == "public") tokens.push_back(Token{T_PUBLIC, word, lineNo, colNo});   
                 else if (word == "protected") tokens.push_back(Token{T_PROTECTED, word, lineNo, colNo});
                 else if (word == "struct") tokens.push_back(Token{T_STRUCT, word, lineNo, colNo}); 
-                else if (word == "class") tokens.push_back(Token{T_CLASS, word, lineNo, colNo});   
+                else if (word == "class") tokens.push_back(Token{T_CLASS, word, lineNo, colNo}); 
+                else if (word == "try") tokens.push_back(Token{T_TRY, word, lineNo, colNo});
+                else if (word == "catch") tokens.push_back(Token{T_CATCH, word, lineNo, colNo}); 
+                else if (word == "e") tokens.push_back(Token{T_ETARGET, word, lineNo, colNo});   
 
                 else tokens.push_back(Token{T_ID, word, lineNo, colNo});
                 continue;
@@ -370,6 +374,9 @@ private:
         }else if (tokens[pos].type == T_PUBLIC) { 
             parsePublicStatement();
         }
+        else if (tokens[pos].type == T_TRY) { 
+            parseTryCatchStatement();
+        }
          else {
             cout << "Syntax error: unexpected token '" << tokens[pos].value 
                  << "' at line " << tokens[pos].lineNo << ", column " << tokens[pos].colNo << endl;
@@ -479,6 +486,19 @@ private:
         expect(T_ID);
         expect(T_SEMICOLON);
     }
+
+    void parseTryCatchStatement ()
+    {
+        expect(T_TRY);
+        parseBlock();
+        expect(T_CATCH);
+        expect(T_LPAREN);
+        expect(T_ETARGET);
+        expect(T_RPAREN);
+        parseBlock();
+    }
+
+
     void parseReturnStatement() {
         expect(T_RETURN);
         parseExpression();
@@ -803,42 +823,28 @@ int main() {
         } magr {
             return 0;
         }
-        
-        while (count < 5) {
-            count++;
-        }
-
         for (int i = 0; i < 5 ; i++) {
         int count ;
         count = 0 ; 
 
         }
-
-       
         class bhb {
-        protected ajmal ; 
-        private car ;
-        public model ; 
+            protected ajmal ; 
+            private car ;
+            public model ; 
         };
-
         struct room {
-
-        protected studentName ; 
-        private studentCgpa ;
-        public studentRollNo ; 
+            protected studentName ; 
+            private studentCgpa ;
+            public studentRollNo ; 
         };
-
-
         // hello burhan butt is here 
         /* hello burhan butt is here */
-
         int count;
         count = 0;
-
         while (count < 5) {
             count++;
         }
-
         int bum = 4  ;
         int num ;
         num = 2;
@@ -856,8 +862,6 @@ int main() {
             break ;
             
         }
-
-        
         void printData()
         {
 
@@ -868,6 +872,11 @@ int main() {
             {
             }
             return a ;
+        }
+        try {
+        }
+        catch (e)
+        {
         }
 
     )";
