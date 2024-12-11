@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <cctype>
+#include <unordered_map>
 
 using namespace std;
 
@@ -15,7 +16,9 @@ enum TokenType {
     T_SEMICOLON, T_GT,T_LT,T_LE,T_GE,T_NEQ,T_EQ ,T_EOF, T_COLON,T_COMMA,
     T_AGR , T_MAGR,
     T_INCREMENT,T_DECREMENT,  
-    T_AND , T_OR  
+    T_AND , T_OR ,
+    T_PRIVATE , T_PUBLIC , T_PROTECTED,
+    T_STRUCT , T_CLASS  
       
 };
 
@@ -25,11 +28,12 @@ struct Token {
     int lineNo;
     int colNo;
 };
+
 class Lexer {
 
     char peek() const {
     return (pos + 1 < src.size()) ? src[pos + 1] : '\0';
-}
+    }
 private:
     string src;
     size_t pos;
@@ -98,8 +102,14 @@ public:
                 else if (word == "while") tokens.push_back(Token{T_WHILE, word, lineNo, colNo});   
                 else if (word == "switch") tokens.push_back(Token{T_SWITCH, word, lineNo, colNo});
                 else if (word == "default") tokens.push_back(Token{T_DEFAULT, word, lineNo, colNo}); 
-                else if (word == "case") tokens.push_back(Token{T_CASE, word, lineNo, colNo});    
-                else if (word == "break") tokens.push_back(Token{T_BREAK, word, lineNo, colNo});   
+                else if (word == "case") tokens.push_back(Token{T_CASE, word, lineNo, colNo});  
+                else if (word == "break") tokens.push_back(Token{T_BREAK, word, lineNo, colNo});  
+
+                else if (word == "private") tokens.push_back(Token{T_PRIVATE, word, lineNo, colNo});       
+                else if (word == "public") tokens.push_back(Token{T_PUBLIC, word, lineNo, colNo});   
+                else if (word == "protected") tokens.push_back(Token{T_PROTECTED, word, lineNo, colNo});
+                else if (word == "struct") tokens.push_back(Token{T_STRUCT, word, lineNo, colNo}); 
+                else if (word == "class") tokens.push_back(Token{T_CLASS, word, lineNo, colNo});   
 
                 else tokens.push_back(Token{T_ID, word, lineNo, colNo});
                 continue;
@@ -332,7 +342,18 @@ private:
             parseSwitchStatement();
         } else if (tokens[pos].type == T_BREAK) { 
             parseBreakStatement();
-        } else {
+        }else if (tokens[pos].type == T_CLASS) { 
+            parseClassStatement();
+        }else if (tokens[pos].type == T_STRUCT) { 
+            parseStructStatement();
+        } else if (tokens[pos].type == T_PROTECTED) { 
+            parseProtectedStatement();
+        } else if (tokens[pos].type == T_PRIVATE) { 
+            parsePrivateStatement();
+        }else if (tokens[pos].type == T_PUBLIC) { 
+            parsePublicStatement();
+        }
+         else {
             cout << "Syntax error: unexpected token '" << tokens[pos].value 
                  << "' at line " << tokens[pos].lineNo << ", column " << tokens[pos].colNo << endl;
             exit(1);
@@ -407,6 +428,40 @@ private:
         }
     }
 
+    void parseClassStatement()
+    {
+        expect(T_CLASS);
+        expect(T_ID);
+        parseBlock();
+        expect(T_SEMICOLON);
+    }
+    void parseStructStatement()
+    {
+        expect(T_STRUCT);
+        expect(T_ID);
+        parseBlock();
+        expect(T_SEMICOLON);
+
+    }
+
+    void parsePublicStatement()
+    {
+        expect(T_PUBLIC);
+        expect(T_ID);
+        expect(T_SEMICOLON);
+    }
+     void parsePrivateStatement()
+    {
+        expect(T_PRIVATE);
+        expect(T_ID);
+        expect(T_SEMICOLON);
+    }
+     void parseProtectedStatement()
+    {
+        expect(T_PROTECTED);
+        expect(T_ID);
+        expect(T_SEMICOLON);
+    }
     void parseReturnStatement() {
         expect(T_RETURN);
         parseExpression();
@@ -446,17 +501,16 @@ private:
 
 
     void parseWhileStatement() {
-        cout << "Parsing while statement" << endl;
         expect(T_WHILE);
         expect(T_LPAREN);
         parseExpression();  // Parse the condition inside parentheses
         expect(T_RPAREN);
-        cout<<"hello "<<endl;
         parseBlock();  // Parse the body of the while loop
     }
 
+
+
 void parseSwitchStatement() {
-    cout << "Parsing switch statement" << endl;
     pos++;
     expect(T_LPAREN);
     expect(T_ID); // Switch variable (or expression)
@@ -476,7 +530,6 @@ void parseSwitchStatement() {
 }
 
 void parseCaseStatement() {
-    cout << "Parsing case statement" << endl;
     pos++;
     expect(T_NUM); // Case value (like case 1:)
     expect(T_COLON);
@@ -488,7 +541,6 @@ void parseCaseStatement() {
 }
 
 void parseDefaultStatement() {
-    cout << "Parsing default statement" << endl;
     pos++;
     expect(T_COLON);
 
@@ -546,7 +598,6 @@ void parseParameter() {
     expect(T_ID);  // Expect parameter name
 }
     void parseBreakStatement() {
-        cout << "Parsing break statement" << endl;
         pos++;
         expect(T_SEMICOLON);
     }
@@ -736,13 +787,34 @@ int main() {
             return 0;
         }
         
-
+        while (count < 5) {
+            count++;
+        }
 
         for (int i = 0; i < 5 ; i++) {
         int count ;
         count = 0 ; 
 
         }
+
+       
+        class bhb {
+        protected ajmal ; 
+        private car ;
+        public model ; 
+        };
+
+        struct room {
+
+        protected studentName ; 
+        private studentCgpa ;
+        public studentRollNo ; 
+        };
+
+
+        // hello burhan butt is here 
+        /* hello burhan butt is here */
+
         int count;
         count = 0;
 
@@ -781,9 +853,6 @@ int main() {
             return a ;
         }
 
-        // hello burhan butt is here 
-        /* hello burhan butt is here */
-
     )";
 
     Lexer lexer(input);
@@ -794,3 +863,5 @@ int main() {
 
     return 0;
 }
+
+
