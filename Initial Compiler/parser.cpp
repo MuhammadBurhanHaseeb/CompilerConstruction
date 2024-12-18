@@ -429,6 +429,270 @@ public:
     }
 };
 
+
+
+class AssemblyCodeGenerator
+{
+private:
+    vector<string> assemblyCode;
+    int labelCounter;
+    unordered_map<string, string> variableRegisterMap;
+    int registerCounter = 0;
+
+    string allocateRegister(const string &var)
+    {
+        if (variableRegisterMap.find(var) == variableRegisterMap.end())
+        {
+            variableRegisterMap[var] = "r" + to_string(registerCounter++);
+        }
+        return variableRegisterMap[var];
+    }
+
+    string generateLabel()
+    {
+        return "L" + to_string(labelCounter++);
+    }
+
+    void addInstruction(const string &instruction)
+    {
+        assemblyCode.push_back(instruction);
+    }
+
+    void processAssignment(const string &line)
+    {
+        auto eqPos = line.find("=");
+        string tVar = line.substr(0, eqPos);
+        string value = line.substr(eqPos + 1);
+
+        tVar = trim(tVar);
+        value = trim(value);
+
+        string targetRegister = allocateRegister(tVar);
+
+        // Direct assignment
+        if (isdigit(value[0]))
+        {
+            addInstruction("li " + targetRegister + ", " + value);
+        }
+        else
+        {
+            string sourceRegister = allocateRegister(value);
+            addInstruction("move " + targetRegister + ", " + sourceRegister);
+        }
+    }
+
+    void processBinaryOperation(const string &line)
+    {
+        static const unordered_map<string, string> operationMap = {
+            {"+", "add"},
+            {"-", "sub"},
+            {"*", "mul"},
+            {"/", "div"}};
+
+        auto eqPos = line.find("=");
+        string tVar = line.substr(0, eqPos);
+        string expr = line.substr(eqPos + 1);
+
+        string op;
+        for (const auto &entry : operationMap)
+        {
+            if (expr.find(entry.first) != string::npos)
+            {
+                op = entry.first;
+                break;
+            }
+        }
+
+        auto opPos = expr.find(op);
+        string lhs = expr.substr(0, opPos);
+        string rhs = expr.substr(opPos + 1);
+
+        tVar = trim(tVar);
+        lhs = trim(lhs);
+        rhs = trim(rhs);
+
+        string targetRegister = allocateRegister(tVar);
+        string lhsRegister = isdigit(lhs[0]) ? allocateRegister(generateTempRegister(lhs)) : allocateRegister(lhs);
+        string rhsRegister = isdigit(rhs[0]) ? allocateRegister(generateTempRegister(rhs)) : allocateRegister(rhs);
+
+        if (isdigit(lhs[0]))
+            addInstruction("li " + lhsRegister + ", " + lhs);
+        if (isdigit(rhs[0]))
+            addInstruction("li " + rhsRegister + ", " + rhs);
+
+        addInstruction(operationMap.at(op) + " " + targetRegister + ", " + lhsRegister + ", " + rhsRegister);
+    }
+
+    void processRelationalOperation(const string &line)
+    {
+        auto eqPos = line.find("=");
+        string tVar = line.substr(0, eqPos);
+        string expr = line.substr(eqPos + 1);
+
+        tVar = trim(tVar);
+
+        string op;
+        if (expr.find(">=") != string::npos)
+            op = ">=";
+        else if (expr.find("<=") != string::npos)
+            op = "<=";
+        else if (expr.find("==") != string::npos)
+            op = "==";
+        else if (expr.find("!=") != string::npos)
+            op = "!=";
+        else if (expr.find(">") != string::npos)
+            op = ">";
+        else if (expr.find("<") != string::npos)
+            op = "<";
+
+        auto opPos = expr.find(op);
+        string lhs = expr.substr(0, opPos);
+        string rhs = expr.substr(opPos + op.size());
+
+        lhs = trim(lhs);
+        rhs = trim(rhs);
+
+        string lhsReg = isdigit(lhs[0]) ? allocateRegister(generateTempRegister(lhs)) : allocateRegister(lhs);
+        string rhsReg = isdigit(rhs[0]) ? allocateRegister(generateTempRegister(rhs)) : allocateRegister(rhs);
+        string resultReg = allocateRegister(tVar);
+
+        if (isdigit(lhs[0]))
+            addInstruction("li " + lhsReg + ", " + lhs);
+        if (isdigit(rhs[0]))
+            addInstruction("li " + rhsReg + ", " + rhs);
+
+        if (op == ">")
+        {
+            addInstruction("sgt " + resultReg + ", " + lhsReg + ", " + rhsReg);
+        }
+        else if (op == "<")
+        {
+            addInstruction("slt " + resultReg + ", " + lhsReg + ", " + rhsReg);
+        }
+        else if (op == ">=")
+        {
+            addInstruction("slt " + resultReg + ", " + lhsReg + ", " + rhsReg);
+            addInstruction("seqz " + resultReg + ", " + resultReg);
+        }
+        else if (op == "<=")
+        {
+            addInstruction("sgt " + resultReg + ", " + lhsReg + ", " + rhsReg);
+            addInstruction("seqz " + resultReg + ", " + resultReg);
+        }
+        else if (op == "==")
+        {
+            addInstruction("sub " + resultReg + ", " + lhsReg + ", " + rhsReg);
+            addInstruction("seqz " + resultReg + ", " + resultReg);
+        }
+        else if (op == "!=")
+        {
+            addInstruction("sub " + resultReg + ", " + lhsReg + ", " + rhsReg);
+            addInstruction("snez " + resultReg + ", " + resultReg);
+        }
+    }
+
+    void processConditional(const string &line)
+    {
+        auto ifPos = line.find("if");
+        auto gotoPos = line.find("goto");
+        string condition = line.substr(ifPos + 2, gotoPos - (ifPos + 2));
+        string label = line.substr(gotoPos + 4);
+
+        condition = trim(condition);
+        label = trim(label);
+
+        string conditionReg = allocateRegister(condition);
+        addInstruction("bne " + conditionReg + ", x0, " + label);
+    }
+
+    void processGoto(const string &line)
+    {
+        auto gotoPos = line.find("goto");
+        string label = line.substr(gotoPos + 4);
+        label = trim(label);
+
+        addInstruction("jmp " + label);
+    }
+
+    void processLabel(const string &line)
+    {
+        addInstruction(line);
+    }
+
+    string generateTempRegister(const string &value)
+    {
+        return "temp_" + value;
+    }
+
+    string trim(const string &str)
+    {
+        auto start = str.find_first_not_of(" \t");
+        auto end = str.find_last_not_of(" \t");
+        return (start == string::npos) ? "" : str.substr(start, end - start + 1);
+    }
+
+public:
+    AssemblyCodeGenerator() : labelCounter(0) {}
+
+    void generateAssembly(const vector<string> &intermediateCode)
+    {
+        for (const auto &line : intermediateCode)
+        {
+            string Line = trim(line);
+            if (Line.empty())
+                continue;
+
+            if (Line.find("=") != string::npos)
+            {
+                if (Line.find(">") != string::npos || Line.find("<") != string::npos ||
+                    Line.find("==") != string::npos || Line.find(">=") != string::npos ||
+                    Line.find("<=") != string::npos || Line.find("!=") != string::npos)
+                {
+                    processRelationalOperation(Line);
+                }
+                else if (Line.find("+") != string::npos ||
+                         Line.find("-") != string::npos ||
+                         Line.find("*") != string::npos ||
+                         Line.find("/") != string::npos)
+                {
+                    processBinaryOperation(Line);
+                }
+                else
+                {
+                    processAssignment(Line);
+                }
+            }
+            else if (Line.find("if") == 0)
+            {
+                processConditional(Line);
+            }
+            else if (Line.find("goto") == 0)
+            {
+                processGoto(Line);
+            }
+            else if (Line.back() == ':')
+            {
+                processLabel(Line);
+            }
+        }
+    }
+
+    void printAssemblyCode()
+    {
+        cout << "\n\n============================="<<endl;
+        cout << "ASSEMBLY CODE:" << endl;
+        cout << "============================="<<endl;
+        for (const auto &instruction : assemblyCode)
+        {
+            cout << instruction << "\n";
+        }
+        cout << "\n\n";
+    }
+};
+
+
+
+
 class Parser {
 public:
 
@@ -1456,7 +1720,7 @@ string tokenTypeToString(TokenType type) {
 
 int main() {
     string input = R"(
-        int b = 0;
+        int b ;
         if (b > 10) {
             return b;
         } else {
@@ -1531,7 +1795,17 @@ int main() {
     parser.parseProgram();
     icg.printInstructions();
 
+    cout<<""<<endl;
+    cout<<""<<endl;
+    cout<<""<<endl;
+    cout<<""<<endl;
+    cout<<""<<endl;
     symTable.printSymbolTable();
+
+    AssemblyCodeGenerator acg ; 
+    acg.generateAssembly(icg.instructions);
+    acg.printAssemblyCode();
+
     
 
     return 0;
